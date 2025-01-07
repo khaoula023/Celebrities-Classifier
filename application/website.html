@@ -7,8 +7,7 @@
     <title> Celebrities Classifier </title>
 </head>
 
-<body>
-        
+<body>     
    <div class="Person" style="--color: #231942">
     <div class="container">
         <div class=" container-inner">
@@ -69,8 +68,33 @@
     <p> Egyptian comedian</p>
    </div>
 
-   <input type="file" id="upload">
-   <label for="upload"><i class="imguplaod"></i>upload Image</label>
+   <div class="upload-container">
+    <label for="upload">
+        <i class="imgupload"></i> Upload Image
+    </label>
+    <input type="file" id="upload" accept="image/*">
+    <div id="preview-container">
+        <img id="preview" src="#" alt="Uploaded Image Preview" style="display: none;">
+    </div>
+</div>
+
+<script>
+    // JavaScript to handle image upload and preview
+    const uploadInput = document.getElementById('upload');
+    const preview = document.getElementById('preview');
+
+    uploadInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
 
 </body>
 </html>

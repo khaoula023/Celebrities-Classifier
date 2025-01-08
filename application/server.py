@@ -7,5 +7,6 @@ app = Flask(__name__)
 def classification():
     return "Hello every one"
 
+
 if __name__ == "__main__":
     app.run(host='localhost', port=9874, debug=True)

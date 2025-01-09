@@ -4,6 +4,6 @@ opencv-python
 mediapipe
 flask
 scikit-learn
-tensorflow
+pandas
 #-e .
 

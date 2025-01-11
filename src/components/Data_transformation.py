@@ -6,7 +6,7 @@ import numpy as np
 import cv2
 from src.exception import CustomException
 from src.logger import logging
-from src.utils import save_object, resize_image
+from src.utils import  resize_image
 from sklearn.utils import shuffle
 
 @dataclass

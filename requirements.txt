@@ -5,5 +5,6 @@ mediapipe
 flask
 scikit-learn
 pandas
+dill
 #-e .
 

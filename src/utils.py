@@ -3,12 +3,19 @@ import os
 import dill
 import numpy as np
 import cv2
+import mediapipe as mp
 from src.exception import CustomException
 from sklearn.metrics import accuracy_score
 
-def resize_image(image_path, img_size):
+def resize_image(input_image, img_size):
         try:
-            image = cv2.imread(image_path)
+            if isinstance(input_image, str):
+                # Load the image from the file path
+                image = cv2.imread(input_image)
+                if image is None:
+                    raise ValueError(f"Failed to load image from path: {input_image}")
+            elif isinstance(input_image, np.ndarray):
+                image = input_image
             # Resize the image to the given size
             resized_image = cv2.resize(image, img_size)
             resized_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
@@ -56,4 +63,56 @@ def evaluate_models(X_train, y_train,X_test,y_test,models):
     except Exception as e:
         raise CustomException(e, sys)    
     
-
+def detect_face(image_path):
+    try:
+        # Check if file exists
+        if not os.path.exists(image_path):
+            print(f"File not found: {image_path}")
+            return None  # Return None to indicate no faces were detected or an error occurred
+        
+        # Read the image
+        img = cv2.imread(image_path)
+        
+        # Check if image was loaded correctly
+        if img is None:
+            print(f"Failed to load image: {image_path}")
+            return None
+        
+        # Convert the image to RGB (MediaPipe uses RGB)
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        # Initialize MediaPipe face detection
+        mp_face_detection = mp.solutions.face_detection
+        face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
+        
+        # Perform face detection
+        results = face_detection.process(img_rgb)
+        
+        # List to store cropped faces
+        cropped_faces = []
+        
+        # Check if faces were detected
+        if results.detections:
+            for detection in results.detections:
+                # Get bounding box coordinates
+                bboxC = detection.location_data.relative_bounding_box
+                ih, iw, _ = img.shape
+                x_min = int(bboxC.xmin * iw)
+                y_min = int(bboxC.ymin * ih)
+                width = int(bboxC.width * iw)
+                height = int(bboxC.height * ih)
+                
+                # Ensure the bounding box stays within image bounds
+                x_min = max(0, x_min)
+                y_min = max(0, y_min)
+                x_max = min(iw, x_min + width)
+                y_max = min(ih, y_min + height)
+                
+                # Crop the face
+                cropped_face = img[y_min:y_max, x_min:x_max]
+                cropped_faces.append(cropped_face)
+    
+        # Return the list of cropped faces
+        return cropped_faces if cropped_faces else None
+    except Exception as e:
+        raise CustomException(e, sys)

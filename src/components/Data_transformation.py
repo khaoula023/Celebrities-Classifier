@@ -6,13 +6,17 @@ import numpy as np
 import cv2
 from src.exception import CustomException
 from src.logger import logging
-from src.utils import  resize_image
+from src.utils import  resize_image, save_object
 from sklearn.utils import shuffle
 from src.components.model_training import ModelTrainer    
 os.environ["LOKY_MAX_CPU_COUNT"] = "4"
+@dataclass
+class DataTransformationConfig:
+    classes_obj_file_path = os.path.join('artifacts', 'Classes.pkl')
 class DataTransformation:
     def __init__(self, img_size=(32, 32)):
         self.img_size = img_size
+        self.data_transformation = DataTransformationConfig()
     
     def preprocess_image(self, image_path):
         try:
@@ -27,6 +31,7 @@ class DataTransformation:
             images = []
             labels = []
             class_names = sorted(os.listdir(data_dir))
+            Classes = {class_name: idx for idx, class_name in enumerate(class_names)}
             logging.info('The Preprocessing is started!')
             for label, class_name in enumerate(class_names):
                 class_dir = os.path.join(data_dir, class_name)
@@ -44,6 +49,10 @@ class DataTransformation:
             labels = np.array(labels)
             images, labels = shuffle(images, labels, random_state=42)
             logging.info("The Preprocessing is completed")
+            save_object(
+                file_path= self.data_transformation.classes_obj_file_path,
+                obj= Classes
+            )
             return images, labels
         except Exception as e:
             raise CustomException(e,sys)

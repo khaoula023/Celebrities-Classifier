@@ -1,12 +1,9 @@
-from flask import Flask, request, jsonify
-#import util
-
-app = Flask(__name__)
-
-@app.route('/')
-def classification():
-    return "Hello every one"
+from src.pipeline.pipeline_predict import PredictPipeline
 
 
-if __name__ == "__main__":
-    app.run(host='localhost', port=9874, debug=True)
+image_path = "Test images\Image_237.jpg"
+
+predict_pipeline = PredictPipeline()
+result = predict_pipeline.predict(image_path)
+print(result)
+

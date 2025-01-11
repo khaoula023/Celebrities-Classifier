@@ -8,11 +8,8 @@ from src.exception import CustomException
 from src.logger import logging
 from src.utils import  resize_image
 from sklearn.utils import shuffle
-
-@dataclass
-class DataTransformationConfig:
-    preprocessor_obj_file_path = os.path.join('artifacts', 'preprocessor.pkl')
-    
+from src.components.model_training import ModelTrainer    
+os.environ["LOKY_MAX_CPU_COUNT"] = "4"
 class DataTransformation:
     def __init__(self, img_size=(32, 32)):
         self.img_size = img_size
@@ -57,3 +54,5 @@ if __name__ == "__main__":
     images, labels = obj.load_data("notebook\cropped")
     print(f"The dataset has {len(images)} images")
     print('some labels:', labels[:10])
+    model  = ModelTrainer()
+    print(model.initiate_model_trainer(images, labels))

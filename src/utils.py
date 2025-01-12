@@ -62,7 +62,8 @@ def evaluate_models(X_train, y_train,X_test,y_test,models):
         return report
     except Exception as e:
         raise CustomException(e, sys)    
-    
+
+# Function to detect faces in a given image:    
 def detect_face(image_path):
     try:
         # Check if file exists
@@ -116,3 +117,9 @@ def detect_face(image_path):
         return cropped_faces if cropped_faces else None
     except Exception as e:
         raise CustomException(e, sys)
+
+# Function to check allowed file extensions
+def allowed_file(filename):
+    # Allowed extensions
+    ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

@@ -70,7 +70,7 @@
 
     <div class="upload-container">
       <label for="upload"> <i class="imgupload"></i> Upload Image </label>
-      <input type="file" id="upload" accept="image/*" />
+      <input type="file" id="upload" name="image" accept="image/*" />
       <div id="preview-container">
         <img
           id="preview"
@@ -79,22 +79,47 @@
           style="display: none"
         />
       </div>
+      <h2 id="result" style="margin-top: 20px; color: #231942"></h2>
     </div>
 
     <script>
-      // JavaScript to handle image upload and preview
       const uploadInput = document.getElementById("upload");
       const preview = document.getElementById("preview");
+      const resultElement = document.getElementById("result");
 
-      uploadInput.addEventListener("change", function (event) {
+      uploadInput.addEventListener("change", async function (event) {
         const file = event.target.files[0];
+
         if (file) {
+          // Display image preview
           const reader = new FileReader();
           reader.onload = function (e) {
             preview.src = e.target.result;
             preview.style.display = "block";
           };
           reader.readAsDataURL(file);
+
+          // Send the image to the backend for classification
+          const formData = new FormData();
+          formData.append("image", file);
+
+          try {
+            const response = await fetch("/upload", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (response.ok) {
+              const className = await response.text(); // Fetch the plain text response
+              resultElement.textContent = className; // Display the class name directly
+            } else {
+              resultElement.textContent =
+                "Error: Unable to classify the image.";
+            }
+          } catch (error) {
+            console.error("Fetch Error:", error);
+            resultElement.textContent = "Error: Something went wrong.";
+          }
         }
       });
     </script>

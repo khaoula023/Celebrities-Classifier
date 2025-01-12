@@ -30,7 +30,8 @@ class PredictPipeline:
                 label = [k for k, v in classes.items() if v == pred[0]]
                 labels.append(label)
                 results.append(pred[0])
-                print(pred)
+            labels = sum(labels, [])  
+            print(labels)  
             return labels
         except Exception as e:
             raise CustomException(e, sys)
